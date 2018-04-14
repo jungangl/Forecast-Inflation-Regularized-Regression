@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#SBATCH --partition=long       ### queue to submit to
+#SBATCH --job-name=inflation_forecating      ### job name
+#SBATCH --output=inflation_forecasting.out     ### file in which to store job stdout
+#SBATCH --error=inflation_forecasting.err      ### file in which to store job stderr
+#SBATCH --mem=30000M            ### memory limit, per cpu, in MB
+#SBATCH --nodes=1               ### number of nodes to use
+#SBATCH --ntasks-per-node=1     ### number of tasks to launch per node
+#SBATCH --cpus-per-task=25       ### number of cores for each task
+#SBATCH --time=1-00:00:00
+
+#matlab -r agg_disagg_predict.m
+
+julia /home/jungangl/Forecasting/Forecasting_Real_Data.jl

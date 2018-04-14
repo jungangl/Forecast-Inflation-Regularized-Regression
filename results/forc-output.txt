@@ -1,0 +1,21 @@
+OLS AR(1) Model, h=2: 
+RMSE=1.6740040949324646
+OLS Regression Including all Variables, h=2: 
+RMSE=1.7193856784059727
+Equal Weights Model Averaging with Q=1, h=2: 
+RMSE=1.6556129605742773
+Dynamic Factor, h=2: 
+RMSE=1.6286829665005969
+Tuning Parameter Chosen for ridge: 0.73
+RMSE from ridge Including all Variables, h=2: 
+RMSE=1.639793226792621
+Tuning Parameter Chosen for lasso: 0.2
+Percent of Slope Coefficients Set Equal to Zero by lasso: 63.64
+RMSE from lasso Including all Variables, h=2: 
+RMSE=1.640978571482486
+Depth parameter chosen for random Forest: 8
+RMSE from Random Forest Including all Variables, h=2: 
+RMSE=1.7253269732255512
+Prior parameter g chosen for BMA: 0.0001
+RMSE from Bayesian Model Averaging, h=2: 
+RMSE=1.6373783012284508
