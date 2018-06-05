@@ -107,8 +107,8 @@ RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("OLS AR($K) Model, h = $h: \nRMSE = $RMSE")
 plot(title = "AR(1) with forecasting $h step ahead")
 plot!(yfull[J + h:end], label = "data")
-plot!(ŷ,label = "forecast")
-savefig("../figures/with-real/AR(1) with forecasting $h step ahead.pdf")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/AR1-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -145,8 +145,10 @@ end
 ŷ = OLS_oos_forc(J, h, yfull, xfull)
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("OLS Regression Including all Variables, h = $h: \nRMSE = $RMSE")
-plot(ŷ,label = "ŷ")
-plot!(yfull[J + h:end],label = "actual data")
+plot(title = "OLS with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/OLS-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -188,8 +190,10 @@ Q = 1
 ŷ = modelavg_oos_forc(J, h, Q, yfull, xfull, 10)
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Equal Weights Model Averaging with Q = $Q, h = $h: \nRMSE = $RMSE")
-plot(ŷ, label = "ŷ")
-plot!(yfull[J + h:end], label = "actual data")
+plot(title = "Model Averaging with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/modelavg-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -236,8 +240,10 @@ r = 1
 ŷ = dfm_oos_forc(J, h, yfull, xfull; r = r)
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Dynamic Factor r = $r, h = $h: \nRMSE = $RMSE")
-plot(ŷ,label = "ŷ")
-plot!(yfull[J + h:end], label = "actual data")
+plot(title = "DFM with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/DFM-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -302,8 +308,10 @@ Ridge is a special case of GLMNet when α = 0.0
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Tuning Parameter Chosen for ridge: $λ")
 println("RMSE from ridge Including all Variables, h = $h: \nRMSE = $RMSE")
-plot(ŷ,label = "ŷ")
-plot!(yfull[J + h:end], label = "actual data")
+plot(title = "Ridge with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/ridge-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -318,6 +326,10 @@ RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Tuning Parameter Chosen for lasso: $λ")
 println("Percent of Slope Coefficients Set Equal to Zero by lasso: $(round(100 * (sum(βhat[2:end] .==  .0) / length(βhat[2:end])), 2))")
 println("RMSE from lasso Including all Variables, h = $h: \nRMSE = $RMSE")
+plot(title = "Lasso with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/lasso-$h-step-ahead.pdf")
 ##-------------------------------------------##
 
 
@@ -379,6 +391,10 @@ m,ŷ = rfr_oos_forc(J, h, CV_J, yfull, xfull, m_vec)
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Depth parameter chosen for random Forest: $m")
 println("RMSE from Random Forest Including all Variables, h = $h: \nRMSE = $RMSE")
+plot(title = "Random Forest Regression with forecasting $h step ahead")
+plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/RFR-$h-step-ahead.pdf")
 ##-------------------------------------------##
 =#
 
@@ -490,6 +506,8 @@ g,ŷ = bma_oos_forc(J, h, CV_J, yfull, xfull, θ, g_vec)
 RMSE = sqrt(mean((yfull[J + h:end] - ŷ) .^ 2))
 println("Prior parameter g chosen for BMA: $g")
 println("RMSE from Bayesian Model Averaging, h = $h: \nRMSE = $RMSE")
-plot(ŷ,label = "forc")
+plot(title = "Bayesian Model Averaging with forecasting $h step ahead")
 plot!(yfull[J + h:end], label = "data")
+plot!(ŷ, label = "forecast")
+savefig("../figures/with-real/bayesian-modelavg-$h-step-ahead.pdf")
 ##-------------------------------------------##

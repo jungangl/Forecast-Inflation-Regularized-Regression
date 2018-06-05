@@ -10,7 +10,6 @@ The main file for conducting the analysis is `julia/real-data-forecast.jl` and `
 * Ridge model
 * LASSO model
 * Random forrest model
-* Bayesian model averaging
 
 ## Requirements
 

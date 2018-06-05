@@ -1,0 +1,49 @@
+---
+title: "Forecasting Inflation with Machine Learning Techniques"
+author: "Alex Li"
+date: "6/6/2018"
+output: ioslides_presentation
+---
+
+## Inflation Forecasting
+
+1. There is a huge literature on forecasting aggregate inflation, given the importance of these forecasts for monetary policy. 
+
+2. There are a large number of variables that may be helpful for forecasting inflation.
+
+3. Putting all these variables into the model leads to bad out of sample forecasts. 
+
+4. There are two problems:
+* overfitting in sample
+* too many RHS variables
+
+
+## Disaggregated Information
+
+There is also a smaller literature that investigates using disaggregated information on inflation to forecast aggregate inflation.
+
+The Personal Consumption Expenditure Price Deflator (PCEPI) is aggregated from price indexes of a large number of underlying goods and service categories.
+
+## Research Question
+
+This project investigates using information in the disaggregated data and techniques now common in the machine learning literature to forecast aggregate inflation. We want to see if there is an improvement in terms of out of sample predictions. Here we compare the following forecasting techniques:
+
+* Auto-regressive model
+* OLS model
+* Model averaging with equal weights
+* Dynamic factor model
+* Ridge model
+* LASSO model
+* Random forrest model
+
+## Preliminary Results:
+
+Before adding the interaction terms, the simple AR(1) model has the best performance, which is consistent with the current literature. 
+
+Among the three machine learning models we looked at, the rank by performance is 
+
+Random forrest model > Ridge model > LASSO model
+
+Random forrest is close to the AR(1)
+
+The next step is to add the interaction terms and add a wider range of machine learning algorithms (Elastic Net, Deep Learning etc.)
