@@ -3,7 +3,7 @@ using ScikitLearn: fit!, predict, @sk_import, fit_transform!
 
 @sk_import ensemble: RandomForestRegressor
 f = open("../results/Forc_Output.txt", "w")
-path = "../data/agg_disagg_data_w_labels.csv"
+path = "../data/with-generated/agg_disagg_data_w_labels.csv"
 data_in = readtable(path)
 yfull = convert(Array{Float64}, data_in[:, :Y])
 xfull_Symbs = [:DY1, :DY2, :DY3, :DY4, :DY5, :DY6, :DY7, :DY8, :DY9, :DY10]

@@ -1,4 +1,3 @@
-#Set the number of cores to be used
 Num_Core = 2
 if nprocs() != Num_Core
     addprocs(Num_Core - 1)
@@ -7,53 +6,56 @@ end
 #@everywhere using ScikitLearn: fit!, predict, @sk_import, fit_transform!
 #@everywhere @sk_import ensemble: RandomForestRegressor
 
+h = 6 ## horizon (measured in months) ahead we will forecast
+lag_h = 12 ## number of months over which to calculate inflation for RHS variables
+level = 4 ## aggregation level
+CV_J = 250 ## Within sample training set goes from 1 to 250, validation set goes from (250 + h) to 500
+J = 500 ## Out of sample goes from (500 + h) onwards
 
+function level_bools(level, agg, term)
+    bools = [false for _ in 1:length(agg)]'
+    for i in 1:level - 1
+        bools = bools .| ((agg .== i) .& (term .== 1))
+    end
+    bools = bools .| (agg .== level)
+    return bools
+end
 
+function save_counts(agg, term)
+    levelcounts = zeros(maximum(agg), 2)
+    for i in 1:maximum(agg)
+        levelcounts[i, :] = [i, sum(level_bools(i, agg, term))]
+    end
+    levelcounts = convert(Matrix{Int64}, levelcounts)
+    writedlm("../data/with-real/levelcounts.csv", levelcounts, ',')
+end
 
-#Load full Data Set
-data = readtable("../data/PCEPI_Detail.csv")
-N_all = size(data,1)
-
+## Load full Data Set
+data = readtable("../data/with-real/PCEPI_Detail.csv")
 PCE_data = data[4:end,:]
+agg = convert(Array{Int}, data[2,2:end])
+term = convert(Array{Int}, data[3,2:end])
+save_counts(agg, term)
 
-agg_category = convert(Array{Int}, data[2,2:end])
-term_category = convert(Array{Int}, data[3,2:end])
-
-agg_2_bool = (agg_category .== 2)
-agg_3_bool = (agg_category .== 3) .| ((agg_category .== 2) .& (term_category .== 1))
-agg_4_bool = (agg_category .== 4) .| ((agg_category .== 2) .& (term_category .== 1)) .|
-             ((agg_category .== 3) .& (term_category .== 1))
-
-agg_ind_2 = find([1 agg_2_bool])
-agg_ind_3 = find([1 agg_3_bool])
-agg_ind_4 = find([1 agg_4_bool])
-
-agg_2_data = PCE_data[:, agg_ind_2]
-agg_3_data = PCE_data[:, agg_ind_3]
-agg_4_data = PCE_data[:, agg_ind_4]
+agg_bool = level_bools(4, agg, term)
+agg_data = PCE_data[:, find([1 agg_bool])]
 
 Headline_PCE = convert(Array{Float64}, PCE_data[:, 2])
 Core_PCE = convert(Array{Float64}, PCE_data[:, 3])
-agg_2_PCE = convert(Array{Float64},agg_2_data[:,2:end])
-agg_3_PCE = convert(Array{Float64},agg_3_data[:,2:end])
-agg_4_PCE = convert(Array{Float64},agg_4_data[:,2:end])
+agg_PCE = convert(Array{Float64},agg_data[:,2:end])
 
-#Compute h-step ahead headline inflation as in Gamber and Smith (2016)
-h = 6 # horizon (number of months) ahead we will forecast
-lag_h = 12 # number of months over which to calculate inflation for RHS variables
+## Compute h-step ahead headline inflation as in Gamber and Smith (2016)
+## Define left hand side variables
+hl_π = ((Headline_PCE[lag_h + 1:end] ./ Headline_PCE[1:end - lag_h]) - 1) * (100 / (lag_h / 12))
+core_π = ((Core_PCE[lag_h + 1:end] ./ Core_PCE[1:end - lag_h]) - 1) * (100 / (lag_h / 12))
+## Define right hand side variables
+agg_π = ((agg_PCE[lag_h + 1:end, :] ./ agg_PCE[1:end - lag_h, :]) - 1) .* (100 / (lag_h / 12))
 
-# Define left hand side variables
-hl_pie = ((Headline_PCE[lag_h + 1:end] ./ Headline_PCE[1:end - lag_h]) - 1) * (100 / (lag_h / 12))
-core_pie = ((Core_PCE[lag_h + 1:end] ./ Core_PCE[1:end - lag_h]) - 1) * (100 / (lag_h / 12))
-# Define right hand side variables
-agg_2_pie_lag = ((agg_2_PCE[lag_h + 1:end, :] ./ agg_2_PCE[1:end - lag_h, :]) - 1) .* (100 / (lag_h / 12))
-agg_3_pie_lag = ((agg_3_PCE[lag_h + 1:end, :] ./ agg_3_PCE[1:end - lag_h, :]) - 1) .* (100 / (lag_h / 12))
-agg_4_pie_lag = ((agg_4_PCE[lag_h + 1:end, :] ./ agg_4_PCE[1:end - lag_h, :]) - 1) .* (100 / (lag_h / 12))
+yfull = hl_π
+xfull = agg_π
 
-yfull = hl_pie
-xfull = agg_4_pie_lag
-J = 500
-CV_J = 250
+
+
 #=
 Define generic OLS estimators
 =#

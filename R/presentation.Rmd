@@ -1,49 +1,174 @@
 ---
-title: "Forecasting Inflation with Machine Learning Techniques"
+title: "Use Machine Learning Techniques to Forecast Inflation"
+# subtitle: "EC 607"
 author: "Alex Li"
-date: "6/6/2018"
-output: ioslides_presentation
+date: "`r format(Sys.time(), '%d %B %Y')`"
+# output: ioslides_presentation
+output:
+  xaringan::moon_reader:
+    css: ["css/my-css.css"]
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
 ---
 
-## Inflation Forecasting
+```{r, echo = FALSE, message = F}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+```
 
-1. There is a huge literature on forecasting aggregate inflation, given the importance of these forecasts for monetary policy. 
+## Motivation
 
-2. There are a large number of variables that may be helpful for forecasting inflation.
+Inflation is one of the few key economic variables for monetary policymakers. There is a huge literature on forecasting aggregate inflation, given the importance of these forecasts for monetary policy. 
 
-3. Putting all these variables into the model leads to bad out of sample forecasts. 
+There are a large number of variables that may be helpful for forecasting inflation. Putting all these variables into the model leads to bad out of sample forecasts. 
 
-4. There are two problems:
+---
+
+## Motivation (cont.)
+
+There are two problems when we add too many RHS variables into a model:
+
 * overfitting in sample
-* too many RHS variables
+* low degrees of freedom
 
+Recent studies have shown that dynamic factor models may provide a parsimonious way to include incoming information about a wide variety of economic activity.
 
-## Disaggregated Information
+* Stock and Watson (1999, 2002)
+* Bernanke and Boivin (2003)
+* Bernanke, Boivin, and Eliasz (2005)
+* Giannone, Reichlin, and Sala (2005)
 
-There is also a smaller literature that investigates using disaggregated information on inflation to forecast aggregate inflation.
+---
+
+## Contribution
+
+This paper explores the potential use of recently developed techniques in the machine learning literature, and compares the performance of various models (including dynamic factor models.)
+
+This paper contributes to the literature by
+
+* Evaluating various novel forecast modeling strategies from machine learning literature
+* Exoloring the possibility of improving performance by adding **interaction** terms
+* Introducing the idea of cross-validation into beyesian estimation for forecasting 
+
+---
+
+## Disaggregated Data
+
+There is also some literature that investigates using disaggregated information on inflation to forecast aggregate inflation.
 
 The Personal Consumption Expenditure Price Deflator (PCEPI) is aggregated from price indexes of a large number of underlying goods and service categories.
 
-## Research Question
+PCEPI is a United States-wide indicator of the average increase in prices for all domestic personal consumption. It is benchmarked to a base of 2009 = 100.
 
-This project investigates using information in the disaggregated data and techniques now common in the machine learning literature to forecast aggregate inflation. We want to see if there is an improvement in terms of out of sample predictions. Here we compare the following forecasting techniques:
 
-* Auto-regressive model
-* OLS model
-* Model averaging with equal weights
-* Dynamic factor model
-* Ridge model
-* LASSO model
-* Random forrest model
 
-## Preliminary Results:
+---
 
-Before adding the interaction terms, the simple AR(1) model has the best performance, which is consistent with the current literature. 
+## Disaggregated Data (cont.)
 
-Among the three machine learning models we looked at, the rank by performance is 
+![](disaggregate-diagram.png)
+---
 
-Random forrest model > Ridge model > LASSO model
+## Disaggregate Data (cont.)
 
-Random forrest is close to the AR(1)
+```{r, echo = FALSE}
+dt <- read.table("../data/levelcounts.csv",sep = ",",header = FALSE)
+colnames(dt) <- c("level", "counts")
+kable(dt) %>% 
+    kable_styling(bootstrap_options = "striped", full_width = F, position = "float_left")
+```
 
-The next step is to add the interaction terms and add a wider range of machine learning algorithms (Elastic Net, Deep Learning etc.)
+.pull-right[
+So far we have explored the aggregation level 4 which contains 55 vectors of variables. We will explore the performance of each model at each level of aggregation.
+]
+
+---
+
+## Models
+
+So far we have explored and compared the following forecasting techniques. Performance is measured by root mean square error (RMSE):
+
+* ARM:  Auto-regressive model
+* OLS:  OLS model
+* MAG:  Model averaging with equal weights
+* DFM:  Dynamic factor model
+* RDG:  Ridge model
+* LAS:  LASSO model
+* RFM:  Random forrest model
+* BMA:  Bayesian model averagin model
+
+For the future research we will also add 
+
+* ENM:  Elastic net model
+* DLM:  Deep learning model
+* ......
+
+---
+
+## Prediction Formation
+
+<center>
+![](prediction-formation.png)
+<center>
+
+--- 
+---
+
+## Auto-regressive Model
+
+1. Estimated the following model using $Y_{1:T_0}$
+.large[
+$$Y^A_{t+h} = \beta_0 + \beta ' \cdot Y^A_{t} + \varepsilon_t$$]
+2. "Forecast" within-sample predictions for $Y_{T_0+h:T}$
+
+3. Compute the RMSE given the sample
+
+---
+
+## OLS Model
+
+Let $\tilde Y^D_{t}$ be the disaggregaed data dropping the last column 
+.large[
+$$Y^A_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta_2 \cdot \tilde Y^D_{t}  +\varepsilon_t$$]
+
+Drop the last column to avoid perfect multicolinarity
+
+---
+
+## Model Averaging
+
+To implement the model averaging technique, we estimate
+$$Y_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta^i_2 \cdot y^{D,i}_t + \varepsilon_t$$
+Define 
+$$\beta^i = [\beta_0, \beta_1, \beta^{'i}_2]'$$
+$$RHS^i_t = [1, Y^A_t, y_t^{D,i}]$$
+Then the equal weight prediction for 
+$$\hat Y_{t+h} = \frac{1}{K}\sum_{i}^{K} \beta^i \cdot RHS^i_t$$
+---
+
+## Dynamic Factor Model
+
+Apply dimensionreduction techniques - principal component analysis (PCA) to produce the weighting vector. Let $f_t$ be the matrix computed from PCA. 
+.large[
+$$Y_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta_2 \cdot f_t + \varepsilon_t$$]
+
+---
+
+## Ridge, Lasso and Random Forrest
+
+To implement the machine learning techniques for evaluating out-of-sample forecasting performance, we need to divide our data into three pieces:
+<center>
+![](machinelearning-diagram.png)
+<center>
+
+
+
+
+
+
