@@ -3,8 +3,8 @@
   <head>
     <title>Use Machine Learning Techniques to Forecast Inflation</title>
     <meta charset="utf-8">
-    <meta name="author" content="Alex Li" />
-    <meta name="date" content="2018-06-05" />
+    <meta name="author" content="Alex Li and Jeremy Piger" />
+    <meta name="date" content="2018-06-07" />
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
     <link rel="stylesheet" href="css/my-css.css" type="text/css" />
   </head>
@@ -13,8 +13,8 @@
 class: center, middle, inverse, title-slide
 
 # Use Machine Learning Techniques to Forecast Inflation
-### Alex Li
-### 05 June 2018
+### Alex Li and Jeremy Piger
+### 07 June 2018
 
 ---
 
@@ -201,6 +201,61 @@ To implement the machine learning techniques for evaluating out-of-sample foreca
 &lt;center&gt;
 ![](machinelearning-diagram.png)
 &lt;center&gt;
+
+---
+## Model Visual Comparison
+&lt;table class="table table-bordered" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Model &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; RMSE &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RDG2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.5361 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; LAS2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RDG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6263 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; DFM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6645 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RFM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6795 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; LAS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6829 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AR1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.7057 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; MAG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.7249 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BMA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.8562 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OLS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.9664 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+ 
+The preliminary result shows that machine learning techniques perform much better than the traditional models. Note that we haven't added the second-order interaction terms yet. Although the difference small in absolute value, but the forecasting ability is drastically different. [Click here](http://127.0.0.1:7938) to see.
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

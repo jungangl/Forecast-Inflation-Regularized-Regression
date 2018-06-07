@@ -1,0 +1,13 @@
+name: fsfsdfdsf
+title: fsfsdfdsf
+username:
+account: alexlijungang
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 356675
+bundleId: 1416248
+url: https://alexlijungang.shinyapps.io/fsfsdfdsf/
+when: 1528357113.85475
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: disaggregate-diagram.png|machinelearning-diagram.png|prediction-formation.png|presentation.html|presentation.Rmd|ui.R|css/.DS_Store|css/my-css.css|libs/css/my-css.css|libs/kePrint-0.0.1/kePrint.js

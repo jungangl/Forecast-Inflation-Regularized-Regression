@@ -1,7 +1,7 @@
 ---
 title: "Use Machine Learning Techniques to Forecast Inflation"
 # subtitle: "EC 607"
-author: "Alex Li"
+author: "Alex Li and Jeremy Piger"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 # output: ioslides_presentation
 output:
@@ -20,6 +20,8 @@ library(ggplot2)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+library(shiny)
+library(reshape2)
 ```
 
 ## Motivation
@@ -78,7 +80,10 @@ PCEPI is a United States-wide indicator of the average increase in prices for al
 ## Disaggregate Data (cont.)
 
 ```{r, echo = FALSE}
-dt <- read.table("../data/levelcounts.csv",sep = ",",header = FALSE)
+dt <- read.table(
+  "../data/with-real/levelcounts.csv",
+  sep = ",",
+  header = FALSE)
 colnames(dt) <- c("level", "counts")
 kable(dt) %>% 
     kable_styling(bootstrap_options = "striped", full_width = F, position = "float_left")
@@ -166,6 +171,38 @@ To implement the machine learning techniques for evaluating out-of-sample foreca
 <center>
 ![](machinelearning-diagram.png)
 <center>
+
+---
+## Model Visual Comparison
+```{r, echo = F}
+
+RMSEs <- matrix(
+  c(
+  "RDG2", "1.5361",
+  "LAS2", "1.6007",
+  "RDG", "1.6263",
+  "DFM", "1.6645",
+  "RFM", "1.6795",
+  "LAS", "1.6829",
+  "AR1", "1.7057",
+  "MAG", "1.7249",
+  "BMA", "1.8562",
+  "OLS", "1.9664"
+  ),
+  ncol = 2,
+  byrow=TRUE)
+colnames(RMSEs) <- c("Model", "RMSE")
+kable(RMSEs) %>%
+    kable_styling(bootstrap_options = "bordered")
+```
+ 
+The preliminary result shows that machine learning techniques perform much better than the traditional models. Note that we haven't added the second-order interaction terms yet. Although the difference small in absolute value, but the forecasting ability is drastically different. [Click here](http://127.0.0.1:7938) to see.
+
+
+
+
+
+
 
 
 

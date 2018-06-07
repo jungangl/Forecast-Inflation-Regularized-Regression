@@ -8,8 +8,8 @@
 #SBATCH --nodes=1               ### number of nodes to use
 #SBATCH --ntasks-per-node=1     ### number of tasks to launch per node
 #SBATCH --cpus-per-task=25       ### number of cores for each task
-#SBATCH --time=1-00:00:00
+#SBATCH --time=0-10:00:00
 
 #matlab -r agg_disagg_predict.m
 
-julia /home/jungangl/Forecasting/real-data-forecast.jl
+julia /home/jungangl/forecast-machine-learning/julia/real-data-forecast.jl
