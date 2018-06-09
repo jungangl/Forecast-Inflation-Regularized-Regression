@@ -1,4 +1,4 @@
-Num_Core = 23
+Num_Core = 1
 if nprocs() != Num_Core
     addprocs(Num_Core - 1)
 end
@@ -7,7 +7,7 @@ end
 @everywhere using CSV, GLMNet, Combinatorics, DataFrames, Plots
 @everywhere using ScikitLearn: fit!, predict, @sk_import, fit_transform!
 @everywhere @sk_import ensemble: RandomForestRegressor
-
+include("cross-terms.jl")
 
 h = 6 ## horizon (measured in months) ahead we will forecast
 h_lag = 12 ## number of months over which to calculate inflation
@@ -54,7 +54,7 @@ term = convert(Array{Int}, data[3,2:end])
 
 
 
-data_agg = PCE[:, find([1 level_bools(4, agg, term)])]
+data_agg = PCE[:, find([1 level_bools(level, agg, term)])]
 
 PCE_hl = convert(Array{Float64}, PCE[:, 2])
 PCE_core = convert(Array{Float64}, PCE[:, 3])
@@ -73,6 +73,8 @@ PCE_agg = convert(Array{Float64},data_agg[:,2:end])
 Y = π_hl
 Y_lag = π_hl_lag
 X_lag = π_agg_lag
+X_lag2 = second_order_cross(X_lag)
+X_lag3 = third_order_cross(X_lag)
 
 #############################################################
 #=
@@ -298,10 +300,44 @@ CSV.write(df_file, df)
 
 ##-------------------------------------------##
 """
+Ridge is a special case of GLMNet when α = 0.0
+"""
+α_rid = 0.0
+λ_vec_rid = 10:0.1:20
+βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag2, λ_vec_rid, α_rid)
+RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
+println("Tuning Parameter Chosen for ridge: $λ, including second order cross terms.")
+println("RMSE from ridge Including all Variables, h = $h: \nRMSE = $RMSE")
+df[:RDG2] = ŷ
+CSV.write(df_file, df)
+##-------------------------------------------##
+
+
+##-------------------------------------------##
+"""
+Ridge is a special case of GLMNet when α = 0.0
+"""
+α_rid = 0.0
+λ_vec_rid = 10:0.1:20
+βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag3, λ_vec_rid, α_rid)
+RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
+println("Tuning Parameter Chosen for ridge: $λ, including third order cross terms.")
+println("RMSE from ridge Including all Variables, h = $h: \nRMSE = $RMSE")
+df[:RDG3] = ŷ
+CSV.write(df_file, df)
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+##-------------------------------------------##
+"""
 LASSO is a special case of GLMNet when α = 1.0
 """
 α_las = 1.0
-λ_vec_las = 0.1:0.1:3.
+λ_vec_las = 0.1:0.1:2.
 βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag, λ_vec_las, α_las)
 RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Tuning Parameter Chosen for lasso: $λ")
@@ -311,7 +347,35 @@ df[:LAS] = ŷ
 CSV.write(df_file, df)
 ##-------------------------------------------##
 
+##-------------------------------------------##
+"""
+LASSO is a special case of GLMNet when α = 1.0
+"""
+α_las = 1.0
+λ_vec_las = 0.1:0.1:3.
+βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag2, λ_vec_las, α_las)
+RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
+println("Tuning Parameter Chosen for lasso: $λ, including second order corss terms.")
+println("Percent of Slope Coefficients Set Equal to Zero by lasso: $(round(100 * (sum(βhat[2:end] .==  .0) / length(βhat[2:end])), 2))")
+println("RMSE from lasso Including all Variables, h = $h: \nRMSE = $RMSE")
+df[:LAS2] = ŷ
+CSV.write(df_file, df)
+##-------------------------------------------##
 
+##-------------------------------------------##
+"""
+LASSO is a special case of GLMNet when α = 1.0
+"""
+α_las = 1.0
+λ_vec_las = 0.1:0.1:3.
+βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag3, λ_vec_las, α_las)
+RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
+println("Tuning Parameter Chosen for lasso: $λ, including third order corss terms.")
+println("Percent of Slope Coefficients Set Equal to Zero by lasso: $(round(100 * (sum(βhat[2:end] .==  .0) / length(βhat[2:end])), 2))")
+println("RMSE from lasso Including all Variables, h = $h: \nRMSE = $RMSE")
+df[:LAS3] = ŷ
+CSV.write(df_file, df)
+##-------------------------------------------##
 
 
 
