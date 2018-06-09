@@ -12,14 +12,18 @@ end
 h = 6 ## horizon (measured in months) ahead we will forecast
 h_lag = 12 ## number of months over which to calculate inflation
 level = 4 ## aggregation level
-J_cv = 250 ## Within sample training set goes from 1 to 250, validation set goes from (250 + h) to 500
-J = 500 ## Out of sample goes from (500 + h) onwards
+J = 277 ## Out of sample goes from (500 + h) onwards
+J_cv = div(J, 2) ## Within sample training set goes from 1 to 250, validation set goes from (250 + h) to 500
+println("J = $J, J_cv = $J_cv")
 df = DataFrame() ## Initialize an empty
+ensemble_names = ["ARM", "MAG", "DFM", "RDG2", "LAS2", "RFM", "BMA"]
+df_file = "../data/with-real/actual-forc-data$J.csv"
 
 function OLSestimator(y, x)
     estimate = inv(x' * x) * (x' * y)
     return estimate
 end
+
 
 function level_bools(level, agg, term)
     bools = [false for _ in 1:length(agg)]'
@@ -29,6 +33,7 @@ function level_bools(level, agg, term)
     bools = bools .| (agg .== level)
     return bools
 end
+
 
 function save_counts(agg, term)
     levelcounts = zeros(maximum(agg), 2)
@@ -45,7 +50,7 @@ data = readtable("../data/with-real/PCEPI_Detail.csv")
 PCE = data[4:end,:]
 agg = convert(Array{Int}, data[2,2:end])
 term = convert(Array{Int}, data[3,2:end])
-save_counts(agg, term)
+#save_counts(agg, term)
 
 
 
@@ -221,7 +226,7 @@ ŷ = dfm_oos_forc(J, h, Y, Y_lag, X_lag; r = r)
 RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Dynamic Factor r = $r, h = $h: \nRMSE = $RMSE")
 df[:DFM] = ŷ
-CSV.write("../data/with-real/actual-forc-data.csv", df)
+CSV.write(df_file, df)
 ##-------------------------------------------##
 
 
@@ -281,13 +286,13 @@ end
 Ridge is a special case of GLMNet when α = 0.0
 """
 α_rid = 0.0
-λ_vec_rid = 11.5:0.01:12.5
+λ_vec_rid = 10:0.1:20
 βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag, λ_vec_rid, α_rid)
 RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Tuning Parameter Chosen for ridge: $λ")
 println("RMSE from ridge Including all Variables, h = $h: \nRMSE = $RMSE")
 df[:RDG] = ŷ
-CSV.write("../data/with-real/actual-forc-data.csv", df)
+CSV.write(df_file, df)
 ##-------------------------------------------##
 
 
@@ -296,14 +301,14 @@ CSV.write("../data/with-real/actual-forc-data.csv", df)
 LASSO is a special case of GLMNet when α = 1.0
 """
 α_las = 1.0
-λ_vec_las = 0.35:0.01:0.45
+λ_vec_las = 0.1:0.1:3.
 βhat, λ, ŷ = glmnet_oos_forc(J, h, J_cv, Y, Y_lag, X_lag, λ_vec_las, α_las)
 RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Tuning Parameter Chosen for lasso: $λ")
 println("Percent of Slope Coefficients Set Equal to Zero by lasso: $(round(100 * (sum(βhat[2:end] .==  .0) / length(βhat[2:end])), 2))")
 println("RMSE from lasso Including all Variables, h = $h: \nRMSE = $RMSE")
 df[:LAS] = ŷ
-CSV.write("../data/with-real/actual-forc-data.csv", df)
+CSV.write(df_file, df)
 ##-------------------------------------------##
 
 
@@ -361,13 +366,13 @@ function rfr_oos_forc(J , h, J_cv, Y, Y_lag, X_lag, m_vec; n_est = 50)
 end
 
 ##-------------------------------------------##
-m_vec = 5:1:10
+m_vec = 1:1:25
 m,ŷ = rfr_oos_forc(J , h, J_cv, Y, Y_lag, X_lag, m_vec)
 RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Depth parameter chosen for random Forest: $m")
 println("RMSE from Random Forest Including all Variables, h = $h: \nRMSE = $RMSE")
 df[:RFR] = ŷ
-CSV.write("../data/with-real/actual-forc-data.csv", df)
+CSV.write(df_file, df)
 ##-------------------------------------------##
 
 
@@ -480,5 +485,26 @@ RMSE = sqrt(mean((Y[J + h:end] - ŷ) .^ 2))
 println("Prior parameter g chosen for BMA: $g")
 println("RMSE from Bayesian Model Averaging, h = $h: \nRMSE = $RMSE")
 df[:BMA] = ŷ
-CSV.write("../data/with-real/actual-forc-data.csv", df)
+CSV.write(df_file, df)
 ##-------------------------------------------##
+
+
+
+
+
+#############################################################
+#=
+Forecast using Ensemble
+=#
+df = CSV.read(df_file)
+N = size(df, 1)
+K = length(ensemble_names)
+ensemble_ŷ = zeros(N)
+for name in ensemble_names
+    ensemble_ŷ = ensemble_ŷ + convert(Vector{Float64}, df[Symbol(name)]) / K
+end
+RMSE = sqrt(mean((Y[J + h:end] - ensemble_ŷ) .^ 2))
+println("Ensemble from $ensemble_names,")
+println("RMSE from Ensemble: RMSE = $RMSE")
+df[:ESMB] = ensemble_ŷ
+CSV.write(df_file, df)

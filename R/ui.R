@@ -20,9 +20,12 @@ ui <- fluidPage(
       "Model Averaging" = "MAG",
       "Dynamic Factor Model" = "DFM",
       "Ridge Model" = "RDG",
+      "Ridge Model 2" = "RDG2",
       "LASSO Model" = "LAS",
+      "LASSO Model 2" = "LAS2",
       "Random Forest Regression" = "RFM",
-      "Bayesian Model Averaging" = "BMA"))
+      "Bayesian Model Averaging" = "BMA",
+      "Ensemble" = "ESMB"))
     ),
   
   mainPanel(
