@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Use Machine Learning Techniques to Forecast Inflation</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Alex Li and Jeremy Piger" />
+    <meta name="date" content="2018-06-17" />
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link rel="stylesheet" href="css/my-css.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Use Machine Learning Techniques to Forecast Inflation
+### Alex Li and Jeremy Piger
+### 17 June 2018
+
+---
+
+
+
+
+## Motivation
+
+Inflation is one of the few key economic variables for monetary policymakers. There is a huge literature on forecasting aggregate inflation, given the importance of these forecasts for monetary policy. 
+
+There are a large number of variables that may be helpful for forecasting inflation. Putting all these variables into the model leads to bad out of sample forecasts. 
+
+---
+
+## Motivation (cont.)
+
+There are two problems when we add too many RHS variables into a model:
+
+* overfitting in sample
+* low degrees of freedom
+
+Recent studies have shown that dynamic factor models may provide a parsimonious way to include incoming information about a wide variety of economic activity.
+
+* Stock and Watson (1999, 2002)
+* Bernanke and Boivin (2003)
+* Bernanke, Boivin, and Eliasz (2005)
+* Giannone, Reichlin, and Sala (2005)
+
+---
+
+## Contribution
+
+This paper explores the potential use of recently developed techniques in the machine learning literature, and compares the performance of various models (including dynamic factor models.)
+
+This paper contributes to the literature by
+
+* Evaluating various novel forecast modeling strategies from machine learning literature
+* Exoloring the possibility of improving performance by adding **interaction** terms
+* Introducing the idea of cross-validation into beyesian estimation for forecasting 
+
+---
+
+## Disaggregated Data
+
+There is also some literature that investigates using disaggregated information on inflation to forecast aggregate inflation.
+
+The Personal Consumption Expenditure Price Deflator (PCEPI) is aggregated from price indexes of a large number of underlying goods and service categories.
+
+PCEPI is a United States-wide indicator of the average increase in prices for all domestic personal consumption. It is benchmarked to a base of 2009 = 100.
+
+
+
+---
+
+## Disaggregated Data (cont.)
+
+![](disaggregate-diagram.png)
+---
+
+## Disaggregate Data (cont.)
+
+&lt;table class="table table-striped" style="width: auto !important; float: left; margin-right: 10px;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; level &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; counts &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 16 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 55 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 139 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 200 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 216 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 221 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.pull-right[
+So far we have explored the aggregation level 4 which contains 55 vectors of variables. We will explore the performance of each model at each level of aggregation.
+]
+
+---
+
+## Models
+
+So far we have explored and compared the following forecasting techniques. Performance is measured by root mean square error (RMSE):
+
+* ARM:  Auto-regressive model
+* OLS:  OLS model
+* MAG:  Model averaging with equal weights
+* DFM:  Dynamic factor model
+* RDG:  Ridge model
+* LAS:  LASSO model
+* RFM:  Random forrest model
+* BMA:  Bayesian model averagin model
+
+For the future research we will also add 
+
+* ENM:  Elastic net model
+* DLM:  Deep learning model
+* ......
+
+---
+
+## Prediction Formation
+
+&lt;center&gt;
+![](prediction-formation.png)
+&lt;center&gt;
+
+--- 
+---
+
+## Auto-regressive Model
+
+1. Estimated the following model using `\(Y_{1:T_0}\)`
+.large[
+`$$Y^A_{t+h} = \beta_0 + \beta ' \cdot Y^A_{t} + \varepsilon_t$$`]
+2. "Forecast" within-sample predictions for `\(Y_{T_0+h:T}\)`
+
+3. Compute the RMSE given the sample
+
+---
+
+## OLS Model
+
+Let `\(\tilde Y^D_{t}\)` be the disaggregaed data dropping the last column 
+.large[
+`$$Y^A_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta_2 \cdot \tilde Y^D_{t}  +\varepsilon_t$$`]
+
+Drop the last column to avoid perfect multicolinarity
+
+---
+
+## Model Averaging
+
+To implement the model averaging technique, we estimate
+`$$Y_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta^i_2 \cdot y^{D,i}_t + \varepsilon_t$$`
+Define 
+`$$\beta^i = [\beta_0, \beta_1, \beta^{'i}_2]'$$`
+`$$RHS^i_t = [1, Y^A_t, y_t^{D,i}]$$`
+Then the equal weight prediction for 
+`$$\hat Y_{t+h} = \frac{1}{K}\sum_{i}^{K} \beta^i \cdot RHS^i_t$$`
+---
+
+## Dynamic Factor Model
+
+Apply dimensionreduction techniques - principal component analysis (PCA) to produce the weighting vector. Let `\(f_t\)` be the matrix computed from PCA. 
+.large[
+`$$Y_{t+h} = \beta_0 + \beta_1Y^A_{t} + \beta_2 \cdot f_t + \varepsilon_t$$`]
+
+---
+
+## Ridge, Lasso and Random Forrest
+
+To implement the machine learning techniques for evaluating out-of-sample forecasting performance, we need to divide our data into three pieces:
+&lt;center&gt;
+![](machinelearning-diagram.png)
+&lt;center&gt;
+
+---
+## Model Visual Comparison
+&lt;table class="table table-bordered" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Model &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; RMSE &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RDG2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.5361 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; LAS2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6007 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RDG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6263 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; DFM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6645 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; RFM &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6795 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; LAS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.6829 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; AR1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.7057 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; MAG &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.7249 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; BMA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.8562 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; OLS &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1.9664 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+ 
+The preliminary result shows that machine learning techniques perform much better than the traditional models. Note that we haven't added the second-order interaction terms yet. Although the difference small in absolute value, but the forecasting ability is drastically different. [Click here](http://127.0.0.1:7938) to see.
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+  }
+});
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

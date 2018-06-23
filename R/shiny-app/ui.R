@@ -1,0 +1,71 @@
+library(shiny)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(lubridate)
+# 
+# read_csv("../data/with-real/actual-forc-data.csv") %>% 
+#   mutate(time = row_number()) %>% 
+#   select(c("REAL", "ARM"))
+
+ui <- fluidPage(
+  sidebarLayout(
+    
+    sidebarPanel(
+      checkboxGroupInput(
+      "models", "Time Series Comparison:",
+      c(
+      "AR1 Model" = "ARM",
+      "Bayesian Model Averaging" = "BMA",
+      "Bayesian Model Averaging 2" = "BMA2",
+      "Dynamic Factor Model" = "DFM",
+      "Dynamic Factor Model 2" = "DFM2",
+      "LASSO Model" = "LAS",
+      "LASSO Model 2" = "LAS2",
+      "Model Averaging" = "MAG",
+      "OLS Model" = "OLS",
+      "Random Forest Regression" = "RFM",
+      "Random Forest Regression 2" = "RFM2",
+      "Ridge Model" = "RDG",
+      "Ridge Model 2" = "RDG2",
+      "Random Walk Model" = "RWM",
+      "Ensemble" = "ESMB")
+      ),
+      radioButtons(
+        "oos_period", "Time Series Comparison:",
+        c(
+          "1984:01" = "277",
+          "1990:01" = "349",
+          "2000:01" = "469"
+        ))
+    ),
+  mainPanel(
+    plotOutput("timeplot")
+    )
+  )
+)
+
+  
+server <- function(input, output) {
+  tsdata <- reactive({
+    check <- read_csv(paste0("../../data/result-forc-indi/level4-h6-J",
+                             input$oos_period,
+                             "/combined", 
+                             ".csv")) %>% 
+      select(REAL, input$models) %>% 
+      mutate(time = row_number()) %>% 
+      melt(id = "time")
+    })
+  
+  output$timeplot <- renderPlot({
+    ggplot(tsdata(), aes(x = time, y = value, color = variable)) + 
+      #geom_line(aes(y = REAL, color = "REAL"), size = 1) +
+      geom_line() +
+      theme_minimal() + 
+      theme(legend.title=element_blank()) + 
+      labs(y = "Inflation", x = "Time")
+    })
+  }
+
+shinyApp(ui, server)

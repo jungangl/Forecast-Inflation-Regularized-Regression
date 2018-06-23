@@ -1,0 +1,5 @@
+J = 277, J_cv = 138, h = 6
+Tuning Parameter Chosen for lasso: 0.6, including second order terms.
+Percent of Slope Coefficients Set Equal to Zero by lasso: 99.5
+RMSE from lasso Including all Variables, h = 6: 
+RMSE = 1.3941306204582227

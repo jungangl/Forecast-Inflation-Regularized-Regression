@@ -1,0 +1,8 @@
+include("ARM.jl")
+include("BMA.jl")
+include("DFM.jl")
+include("GLM.jl")
+include("MAG.jl")
+include("OLS.jl")
+include("RFM.jl")
+include("RWM.jl")

@@ -1,0 +1,4 @@
+J = 349, J_cv = 174, h = 6
+Prior parameter theta chosen for BMA: 0.97
+RMSE from Bayesian Model Averaging, h = 6: 
+RMSE = 1.601649298774156

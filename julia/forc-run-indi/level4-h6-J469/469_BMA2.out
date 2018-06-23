@@ -1,0 +1,4 @@
+J = 469, J_cv = 234, h = 6
+Prior parameter theta chosen for BMA2 with interactions: 0.06
+RMSE from Bayesian Model Averaging, h = 6: 
+RMSE = 1.6742263849179935
