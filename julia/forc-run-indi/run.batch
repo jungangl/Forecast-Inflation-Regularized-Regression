@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH --partition=short       ### queue to submit to
-#SBATCH --job-name=run_TRD     ### job name
-#SBATCH --output=run_TRD.out     ### file in which to store job stdout
-#SBATCH --error=run_TRD.err      ### file in which to store job stderr
-#SBATCH --mem=50000M            ### memory limit, per cpu, in MB
+#SBATCH --job-name=h3J301BMA     ### job name
+#SBATCH --output=h3J301BMA.out     ### file in which to store job stdout
+#SBATCH --error=h3J301BMA.err      ### file in which to store job stderr
+#SBATCH --mem=100000M            ### memory limit, per cpu, in MB
 #SBATCH --nodes=1               ### number of nodes to use
 #SBATCH --ntasks-per-node=1     ### number of tasks to launch per node
 #SBATCH --cpus-per-task=25       ### number of cores for each task
 #SBATCH --time=1-00:00:00
 
-julia /home/jungangl/forecast-machine-learning/julia/forc-run-indi/run_TRD.jl
+julia /projects/devans_econ/shared/forecast-machine-learning/julia/forc-run-indi/run_all.jl

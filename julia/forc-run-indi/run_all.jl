@@ -209,7 +209,7 @@ end
 
 
 ## Set the number of cores to use
-Num_Core = 2
+Num_Core = 25
 if nprocs() != Num_Core
     addprocs(Num_Core - 1)
 end
