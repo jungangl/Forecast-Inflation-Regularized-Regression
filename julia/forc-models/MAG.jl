@@ -1,50 +1,24 @@
-#############################################################
-
-## Model Average out of sample estimation,
-## Start with observation from t = 1 to J
-## Return the forecast values from t = J+1 to T
-function modelavg_oos_forc(J, h, Q, Y, Y_lag, X_lag)
+#####################################################################################
+#Forecast using model averaging method with lagged aggregate variable.
+#Averging model of size Q
+#####################################################################################
+function modelavg_oos_forc(J, h, h_lag, Y, Y_lag, X_lag, Q)
+    ## Vector Index for oos forecast goes from J - (h_lag + h) to length(Y)
+    ŷ = zeros(Float64, size(J - (h_lag + h):length(Y)))
     N = size(X_lag, 2)
-    T_forc = length((J + h):length(Y))
-    ŷ = zeros(T_forc)
-    for (i, t) in enumerate((J + h):length(Y))
-        picks = collect(combinations((1:N), Q))
-        y_forcs = zeros(length(picks))
-        for n in 1:length(picks)
-            LHS = Y[1:(t - h)]
-            RHS = [ones(length(LHS)) Y_lag[1:length(LHS)]]
-            RHS = hcat(RHS, X_lag[1:length(LHS), picks[n]])
-            βhat = OLSestimator(LHS, RHS)
-            x_crnt = [1.0; Y_lag[t]; X_lag[t, picks[n]]]
-            y_forcs[n] = (βhat' * x_crnt)[1]
+    picks = collect(combinations((1:N), Q))
+    ŷ_picks = zeros(length(picks))
+    for (n, vec_î) in enumerate(J - (h_lag + h):length(Y))
+        for (p, pick) in enumerate(picks)
+            LHS = Y[1:(vec_î - h)]
+            sample_size = length(LHS)
+            RHS = hcat([ones(sample_size) Y_lag[1:sample_size]], X_lag[1:sample_size, pick])
+            β̂ = OLSestimator(LHS, RHS)
+            RHS_crnt = [1.0; Y_lag[vec_î]; X_lag[vec_î, pick]]
+            ŷ_picks[p] = dot(β̂, RHS_crnt)
         end
-        ŷ[i] = mean(y_forcs)
+        ŷ[n] = mean(ŷ_picks)
     end
-    return ŷ
-end
-
-
-
-## Model Average with interactions out of sample estimation,
-## Start with observation from t = 1 to J
-## Return the forecast values from t = J+1 to T
-function modelavg_oos_forc(J, h, Q, Y, Y_lag, X_lag, X_lag2)
-    X_lag_comb = [X_lag X_lag2]
-    N = size(X_lag_comb, 2)
-    T_forc = length((J + h):length(Y))
-    ŷ = zeros(T_forc)
-    for (i, t) in enumerate((J + h):length(Y))
-        picks = collect(combinations((1:N), Q))
-        y_forcs = zeros(length(picks))
-        for n in 1:length(picks)
-            LHS = Y[1:(t - h)]
-            RHS = [ones(length(LHS)) Y_lag[1:length(LHS)]]
-            RHS = hcat(RHS, X_lag_comb[1:length(LHS), picks[n]])
-            βhat = OLSestimator(LHS, RHS)
-            x_crnt = [1.0; Y_lag[t]; X_lag_comb[t, picks[n]]]
-            y_forcs[n] = (βhat' * x_crnt)[1]
-        end
-        ŷ[i] = mean(y_forcs)
-    end
-    return ŷ
+    RMSE = sqrt(mean((Y[J - (h_lag + h):length(Y)] - ŷ) .^ 2))
+    return ŷ, RMSE
 end

@@ -1,6 +1,6 @@
-#############################################################
-
-## Forecast using Bayesian Model Averaging
+###########################################################################################
+#Define the marginal likelihood function
+###########################################################################################
 @everywhere function MargLik(x, y, g)
     N = size(y, 1)
     k = size(x, 2)
@@ -14,11 +14,15 @@
 end
 
 
-@everywhere function bma_forc(Y, Y_lag, X_lag, t, h, θ, pre_conv, post_conv)
-    LHS = Y[1:t - h]
-    x = [Y_lag[1:length(LHS)] X_lag[1:length(LHS), :]]
-    x = x .- mean(x, 1)
+
+###########################################################################################
+#Use MCMCMC method for bayesian model averaging
+###########################################################################################
+@everywhere function bma_forc(Y, Y_lag, X_lag, vec_î, h, θ, pre_conv, post_conv)
+    LHS = Y[1:vec_î - h]
     N = length(LHS)
+    x = [Y_lag[1:N] X_lag[1:N, :]]
+    x = x .- mean(x, 1)
     K = size(x, 2)
     τ_vec = zeros(Bool, K)
     k = sum(τ_vec)
@@ -55,61 +59,51 @@ end
         if s > pre_conv
             x_selected = x[:, find(τ_vec)]
             post_β̄ = [mean(LHS); inv((1 + g) * (x_selected' * x_selected)) * (x_selected' * LHS)]
-            x_fore = [Y_lag[1:t] X_lag[1:t, :]]
-            x_fore = x_fore .- mean(x_fore, 1)
-            x_fore = [ones(size(x_fore, 1)) x_fore[:, find(τ_vec)]]
-            x_crnt = x_fore[end, :]
+            x_forc = [Y_lag[1:vec_î] X_lag[1:vec_î, :]]
+            x_forc = x_forc .- mean(x_forc, 1)
+            x_forc = [ones(size(x_forc, 1)) x_forc[:, find(τ_vec)]]
+            x_crnt = x_forc[end, :]
             y_forc = y_forc + x_crnt' * post_β̄
         end
     end
     return y_forc / (post_conv)
 end
 
-@everywhere function bma_inner_RMSE(J, h, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv)
-    ŷ_cv = zeros(length(J_cv + h:J))
-    for (j, t) in enumerate(J_cv + h:J)
-        #println("t = $t")
-        ŷ_cv[j] = bma_forc(Y, Y_lag, X_lag, t, h, θ, pre_conv, post_conv)
-    end
-    return [sqrt(mean((Y[J_cv + h:J] - ŷ_cv) .^ 2)), θ]
-end
 
-function bma_oos_forc(J, h, J_cv, Y, Y_lag, X_lag, θ_vec; pre_conv = 1_000, post_conv = 2_000)
-    # Step1 : pick the best θ
-    RMSE_bma_CV = zeros(length(θ_vec), 2)
-    result = pmap(θ -> bma_inner_RMSE(J, h, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv), θ_vec)
-    for i in 1:length(θ_vec)
-        RMSE_bma_CV[i, :] = result[i]
+
+###########################################################################################
+#The inner function
+###########################################################################################
+@everywhere function bma_inner_RMSE(J, h, h_lag, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv)
+    ## Vector Index for oos forecast goes from J_cv - (h_lag + h) to J - (1 + h_lag + h)
+    ŷ_cv = zeros(Float64, size(J_cv - (h_lag + h):J - (1 + h_lag + h)))
+    for (n, vec_î) in enumerate(J_cv - (h_lag + h):J - (1 + h_lag + h))
+        ŷ_cv[n] = bma_forc(Y, Y_lag, X_lag, vec_î, h, θ, pre_conv, post_conv)
     end
-    index = findmin(RMSE_bma_CV[:, 1])[2]
-    θ = θ_vec[index]
-    # Step 2: oos forecasting
-    T_forc = length(J + h:length(Y))
-    ŷ = zeros(T_forc)
-    for (i, t) in enumerate((J + h):length(Y))
-        ŷ[i] = bma_forc(Y, Y_lag, X_lag, t, h, θ, pre_conv, post_conv)
-    end
-    return θ, ŷ
+    return [sqrt(mean((Y[J_cv - (h_lag + h):J - (1 + h_lag + h)] - ŷ_cv) .^ 2)), θ]
 end
 
 
 
-## Forecast using Bayesian Model Averaging with interaction terms
-function bma_oos_forc(J, h, J_cv, Y, Y_lag, X_lag, X_lag2, θ_vec; pre_conv = 10_000, post_conv = 20_000)
-    X_lag = [X_lag X_lag2]
+###########################################################################################
+#The outer function
+###########################################################################################
+function bma_oos_forc(J, h, h_lag, J_cv, Y, Y_lag, X_lag, θ_vec, pre_conv, post_conv)
     # Step1 : pick the best θ
-    RMSE_bma_CV = zeros(length(θ_vec), 2)
-    result = pmap(θ -> bma_inner_RMSE(J, h, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv), θ_vec)
+    RMSE_cv = zeros(length(θ_vec), 2)
+    result = pmap(θ -> bma_inner_RMSE(J, h, h_lag, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv),
+                  θ_vec)::Array{Array{Float64,1},1}
     for i in 1:length(θ_vec)
-        RMSE_bma_CV[i, :] = result[i]
+        RMSE_cv[i, :] = result[i]
     end
-    index = findmin(RMSE_bma_CV[:, 1])[2]
+    index = findmin(RMSE_cv[:, 1])[2]
     θ = θ_vec[index]
     # Step 2: oos forecasting
-    T_forc = length(J + h:length(Y))
-    ŷ = zeros(T_forc)
-    for (i, t) in enumerate((J + h):length(Y))
-        ŷ[i] = bma_forc(Y, Y_lag, X_lag, t, h, θ, pre_conv, post_conv)
+    ## Vector Index for oos forecast goes from J - (h_lag + h) to length(Y)
+    ŷ = zeros(Float64, size(J - (h_lag + h):length(Y)))
+    for (n, vec_î) in enumerate(J - (h_lag + h):length(Y))
+        ŷ[n] = bma_forc(Y, Y_lag, X_lag, vec_î, h, θ, pre_conv, post_conv)
     end
-    return θ, ŷ
+    RMSE = sqrt(mean((Y[J - (h_lag + h):length(Y)] - ŷ) .^ 2))
+    return θ, ŷ, RMSE, RMSE_cv
 end

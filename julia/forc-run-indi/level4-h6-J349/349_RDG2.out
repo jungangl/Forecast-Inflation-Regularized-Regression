@@ -1,4 +1,0 @@
-J = 349, J_cv = 174, h = 6
-Tuning Parameter Chosen for ridge: 15.0
-RMSE from ridge including second order terms: 
-RMSE = 1.3236896201025534

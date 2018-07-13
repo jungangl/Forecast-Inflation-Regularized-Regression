@@ -1,9 +1,0 @@
-J = 277, J_cv = 138, h = 6
-OLS AR(1) Model: 
-RMSE = 1.3868830170679503
-OLS Regression Including all Variables: 
-RMSE = 2.0601237186736356
-Equal Weights Model Averaging with Q = 1: 
-RMSE = 1.4189387846562629
-Dynamic Factor r = 1: 
-RMSE = 1.3882230535117392

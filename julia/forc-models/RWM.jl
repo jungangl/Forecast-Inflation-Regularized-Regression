@@ -1,23 +1,16 @@
-#############################################################
-#=
-Forecast ssing Random Walk Model
-It is a special case of AR1 model with AR parameter set to be 1
-Start with observation from t = 1 to J
-Return the forecast values from t = J+1 to T
-This model can be written as
-y(t) = α + y(t-6) + ε(t-6)
-We can regress
-y(t) - y(t-6) on a vector of 1's to get the estimate for the drift α̂
-=#
-function rwm_oos_forc(J, h, Y, Y_lag)
-    T_forc = length((J + h):length(Y))
-    ŷ = zeros(T_forc)
-    for (i, t) in enumerate((J + h):length(Y))
-        LHS = Y[1:(t - h)]
-        LHS_lag = Y_lag[1:length(LHS)]
-        α̂ = OLSestimator(LHS - LHS_lag, ones(length(LHS)))
-        y_crnt = [1.0; Y_lag[t]]
-        ŷ[i] = dot(y_crnt, [α̂ ; 1.0])
+#########################################################################
+#Forecast using random walk model, which is a special case of AR1 model
+#with AR parameter set to be 1
+#########################################################################
+function rwm_oos_forc(J, h, h_lag, Y, Y_lag)
+    ŷ = zeros(Float64, size(J - (h_lag + h):length(Y)))
+    for (n, vec_î) in enumerate(J - (h_lag + h):length(Y))
+        LHS = Y[1:(vec_î - h)]
+        sample_size = length(LHS)
+        LHS_lag = Y_lag[1:sample_size]
+        ε̂ = mean(LHS - LHS_lag)
+        ŷ[n] = Y_lag[vec_î] + ε̂
     end
-    return ŷ
+    RMSE = sqrt(mean((Y[J - (h_lag + h):length(Y)] - ŷ) .^ 2))
+    return ŷ, RMSE
 end

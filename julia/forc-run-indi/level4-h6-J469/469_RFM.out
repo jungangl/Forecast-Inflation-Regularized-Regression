@@ -1,5 +1,0 @@
-J = 469, J_cv = 234, h = 6
-Start computing oos RMSE
-Depth parameter chosen for random Forest: 6
-RMSE from Random Forest Including all Variables, h = 6: 
-RMSE = 1.6819209140883438
