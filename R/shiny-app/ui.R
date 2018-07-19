@@ -35,10 +35,19 @@ ui <- fluidPage(
       radioButtons(
         "oos_period", "Time Series Comparison:",
         c(
-          "1984:01" = "277",
-          "1990:01" = "349",
-          "2000:01" = "469"
-        ))
+          "1984:01" = "301",
+          "1990:01" = "373",
+          "2000:01" = "493"
+        )
+      ), 
+      radioButtons(
+        "forecast_horizon", "Forecast Horizon:",
+        c(
+          "3 months" = "3",
+          "6 months" = "6",
+          "12 months" = "12"
+        )
+      )
     ),
   mainPanel(
     plotOutput("timeplot")
@@ -49,7 +58,9 @@ ui <- fluidPage(
   
 server <- function(input, output) {
   tsdata <- reactive({
-    check <- read_csv(paste0("../../data/result-forc-indi/level4-h6-J",
+    check <- read_csv(paste0("../../data/result-forc-indi/level4-h",
+                             input$forecast_horizon,
+                             "-J",
                              input$oos_period,
                              "/combined", 
                              ".csv")) %>% 
@@ -63,9 +74,12 @@ server <- function(input, output) {
       #geom_line(aes(y = REAL, color = "REAL"), size = 1) +
       geom_line() +
       theme_minimal() + 
-      theme(legend.title=element_blank()) + 
+      theme(legend.title = element_blank()) + 
       labs(y = "Inflation", x = "Time")
     })
   }
 
 shinyApp(ui, server)
+
+
+

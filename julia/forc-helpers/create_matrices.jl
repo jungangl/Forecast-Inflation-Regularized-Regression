@@ -5,7 +5,7 @@ include("level_bools.jl")
 
 function create_matrices(level, h, h_lag, head_line)
     ## Load full Data Set
-    data = readtable("../../data/source/PCEPI_Detail.csv")::DataFrame
+    data = readtable("../../../data/source/PCEPI_Detail.csv")::DataFrame
     PCE = data[4:end, :]::DataFrame
     agg = convert(Array{Int}, data[2, 2:end])
     term = convert(Array{Int}, data[3, 2:end])

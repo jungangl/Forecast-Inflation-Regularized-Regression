@@ -53,9 +53,7 @@ function dfm_oos_forc(J, h, h_lag, Y, Y_lag, X_lag, X_lag2, r1, r2)
         sample_size = length(LHS)
         factors1 = get_factors(vec_î, X_lag, r1)
         factors2 = get_factors(vec_î, X_lag2, r2)
-        RHS = [ ones(sample_size) Y_lag[1:sample_size]
-                factors1[1:sample_size, :] factors2[1:sample_size, :]
-                ]
+        RHS = [ ones(sample_size) Y_lag[1:sample_size] factors1[1:sample_size, :] factors2[1:sample_size, :] ]
         β̂ = OLSestimator(LHS, RHS)
         # Compute Forecasts
         RHS_crnt = [1; Y_lag[vec_î]; factors1[vec_î, :]; factors2[vec_î, :]]

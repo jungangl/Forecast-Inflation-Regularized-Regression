@@ -47,5 +47,6 @@ function rfr_oos_forc(J , h, h_lag, J_cv, Y, Y_lag, X_lag, m_vec, n_est)
         RHS_crnt = [Y_lag[vec_î]; X_lag[vec_î, :]]'
         ŷ[n] = ScikitLearn.predict(model, RHS_crnt)[1]
     end
-    return m, ŷ, RMSE_cv
+    RMSE = sqrt(mean((Y[J - (h_lag + h):length(Y)] - ŷ) .^ 2))
+    return m, ŷ, RMSE, RMSE_cv
 end

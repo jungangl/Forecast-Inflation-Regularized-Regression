@@ -12,7 +12,7 @@ function second_order_cross(X)
             end
         end
     end
-    return hcat(X, X_2)
+    return X_2
 end
 
 function third_order_cross(X)
@@ -31,5 +31,5 @@ function third_order_cross(X)
             end
         end
     end
-    return hcat(X, second_order_cross(X), X_3)
+    return X_3
 end

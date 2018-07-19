@@ -1,0 +1,36 @@
+h = 3, J = 301, J_cv = 158
+Depth parameter chosen for Random Forest: 4
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 1.8080282060716446
+h = 3, J = 373, J_cv = 194
+Depth parameter chosen for Random Forest: 2
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 1.7718562986328366
+h = 3, J = 493, J_cv = 254
+Depth parameter chosen for Random Forest: 2
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 1.9985277178115466
+h = 6, J = 301, J_cv = 160
+Depth parameter chosen for Random Forest: 5
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.6026913067256972
+h = 6, J = 373, J_cv = 196
+Depth parameter chosen for Random Forest: 5
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.5140281987512376
+h = 6, J = 493, J_cv = 256
+Depth parameter chosen for Random Forest: 6
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.6819209140883438
+h = 12, J = 301, J_cv = 163
+Depth parameter chosen for Random Forest: 8
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.8499633022151027
+h = 12, J = 373, J_cv = 199
+Depth parameter chosen for Random Forest: 6
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.539410003104411
+h = 12, J = 493, J_cv = 259
+Depth parameter chosen for Random Forest: 1
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.5046084764525756

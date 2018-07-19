@@ -42,11 +42,14 @@ end
             τ_vec_new[neighbor_indx - 1] = !τ_vec[neighbor_indx - 1]
         end
         k = sum(τ_vec_new)
+        println("s = $(s), k = $(k): $(find(τ_vec_new))")
         RHS_new = [ones(N) x[:, find(τ_vec_new)]]
         ln_mod_prior_new = log(θ ^ k * (1 - θ) ^ (K - k))
         # Compute marginal likelihood for candidate model
         ln_fy_new = -Inf
         if k < K
+            writedlm("RSM_new.csv", RHS_new, ',')
+            writedlm("LHS.csv", LHS, ',')
             ln_fy_new = MargLik(RHS_new, LHS, g)
         end
         # MH Step
@@ -76,8 +79,10 @@ end
 ###########################################################################################
 @everywhere function bma_inner_RMSE(J, h, h_lag, J_cv, Y, Y_lag, X_lag, θ, pre_conv, post_conv)
     ## Vector Index for oos forecast goes from J_cv - (h_lag + h) to J - (1 + h_lag + h)
+    #println("θ = $θ")
     ŷ_cv = zeros(Float64, size(J_cv - (h_lag + h):J - (1 + h_lag + h)))
     for (n, vec_î) in enumerate(J_cv - (h_lag + h):J - (1 + h_lag + h))
+        println("n = $n")
         ŷ_cv[n] = bma_forc(Y, Y_lag, X_lag, vec_î, h, θ, pre_conv, post_conv)
     end
     return [sqrt(mean((Y[J_cv - (h_lag + h):J - (1 + h_lag + h)] - ŷ_cv) .^ 2)), θ]

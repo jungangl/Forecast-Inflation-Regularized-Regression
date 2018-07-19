@@ -47,7 +47,8 @@ function glmnet_oos_forc(J, h, h_lag, J_cv, Y, Y_lag, X_lag, λ_vec, α)
         RHS_crnt = [1; Y_lag[vec_î]; X_lag[vec_î, :]]
         ŷ[n] = dot(β̂, RHS_crnt)
     end
-    return β̂, λ, ŷ, RMSE_cv
+    RMSE = sqrt(mean((Y[J - (h_lag + h):length(Y)] - ŷ) .^ 2))
+    return β̂, λ, ŷ, RMSE, RMSE_cv
 end
 
 #α = 0.0

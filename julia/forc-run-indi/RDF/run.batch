@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+#SBATCH --partition=short       ### queue to submit to
+#SBATCH --job-name=RDF          ### job name
+#SBATCH --output=RDF.out        ### file in which to store job stdout
+#SBATCH --error=RDF.err         ### file in which to store job stderr
+#SBATCH --mem=100000M           ### memory limit, per cpu, in MB
+#SBATCH --nodes=1               ### number of nodes to use
+#SBATCH --ntasks-per-node=1     ### number of tasks to launch per node
+#SBATCH --cpus-per-task=25      ### number of cores for each task
+#SBATCH --time=1-00:00:00
+
+julia /projects/devans_econ/shared/forecast-machine-learning/julia/forc-run-indi/RDF/run.jl
