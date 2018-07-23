@@ -24,9 +24,10 @@ ui <- fluidPage(
       "LASSO Model" = "LAS",
       "LASSO Model 2" = "LAS2",
       "Model Averaging" = "MAG",
+      "Model Averaging 2" = "MAG2",
       "OLS Model" = "OLS",
-      "Random Forest Regression" = "RFM",
-      "Random Forest Regression 2" = "RFM2",
+      "Random Forest Regression" = "RDF",
+      "Random Forest Regression 2" = "RDF2",
       "Ridge Model" = "RDG",
       "Ridge Model 2" = "RDG2",
       "Random Walk Model" = "RWM",
@@ -65,7 +66,8 @@ server <- function(input, output) {
                              "/combined", 
                              ".csv")) %>% 
       select(REAL, input$models) %>% 
-      mutate(time = row_number()) %>% 
+      mutate(time = ymd(paste(1984 + (as.numeric(input$oos_period) - 301) / 12, "0101", sep = "")) + 
+                    months(row_number() - 1)) %>% 
       melt(id = "time")
     })
   
@@ -80,6 +82,4 @@ server <- function(input, output) {
   }
 
 shinyApp(ui, server)
-
-
 
