@@ -59,7 +59,7 @@ ui <- fluidPage(
   
 server <- function(input, output) {
   tsdata <- reactive({
-    check <- read_csv(paste0("../../data/result-forc-indi/level4-h",
+    check <- read_csv(paste0("../../data/results/baseline/level4-h",
                              input$forecast_horizon,
                              "-J",
                              input$oos_period,

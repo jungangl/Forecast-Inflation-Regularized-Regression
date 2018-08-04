@@ -1,0 +1,36 @@
+h = 3, J = 301, J_cv = 158
+Depth parameter chosen for Random Forest with interaction terms: 13
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 1.6782134755718516
+h = 3, J = 373, J_cv = 194
+Depth parameter chosen for Random Forest with interaction terms: 2
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 1.723024211363064
+h = 3, J = 493, J_cv = 254
+Depth parameter chosen for Random Forest with interaction terms: 2
+RMSE from Random Forest Including all Variables, h = 3: 
+RMSE = 2.00610170755354
+h = 6, J = 301, J_cv = 160
+Depth parameter chosen for Random Forest with interaction terms: 6
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.4040784705563047
+h = 6, J = 373, J_cv = 196
+Depth parameter chosen for Random Forest with interaction terms: 4
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.436916648619673
+h = 6, J = 493, J_cv = 256
+Depth parameter chosen for Random Forest with interaction terms: 4
+RMSE from Random Forest Including all Variables, h = 6: 
+RMSE = 1.6277442351597644
+h = 12, J = 301, J_cv = 163
+Depth parameter chosen for Random Forest with interaction terms: 6
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.2798232405581094
+h = 12, J = 373, J_cv = 199
+Depth parameter chosen for Random Forest with interaction terms: 1
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.3276162630593973
+h = 12, J = 493, J_cv = 259
+Depth parameter chosen for Random Forest with interaction terms: 1
+RMSE from Random Forest Including all Variables, h = 12: 
+RMSE = 1.2544099149182617

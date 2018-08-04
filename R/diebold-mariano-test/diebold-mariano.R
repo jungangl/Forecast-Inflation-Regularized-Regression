@@ -6,9 +6,11 @@ library(multDM)
 
 
 level = 4
+case = "baseline"
 for (h in c(3, 6, 12)){
   for (J in c(301, 373, 493)){
-    df_in <- read_csv(paste0("../../data/result-forc-indi/level", level,
+    df_in <- read_csv(paste0("../../data/results/", case,
+                             "/level", level,
                              "-h", h, "-J", J, 
                              "/combined", 
                              ".csv"))
@@ -31,7 +33,7 @@ for (h in c(3, 6, 12)){
       df_out$newcol <- dm_vec
       colnames(df_out)[colnames(df_out)=="newcol"] <- model_col
     }
-    write.csv(file = paste0("../../data/diebold-mariano/level4-h", h, "-J", J, ".csv"), df_out, row.names=FALSE)
+    write.csv(file = paste0("../../data/diebold-mariano/", case, "/level4-h", h, "-J", J, ".csv"), df_out, row.names=FALSE)
   }
 }
 

@@ -1,0 +1,117 @@
+h = 3, J = 301, J_cv = 158
+Dynamic Factor r = 1: 
+RMSE = 1.7059104976099664
+AR(1) Model: 
+RMSE = 1.6897657409760307
+OLS Regression Including all Variables: 
+RMSE = 3.1020906450440555
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.6971590100982084
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.7083703163195312
+Random Walk Model: 
+RMSE = 1.724384870318009
+h = 3, J = 373, J_cv = 194
+Dynamic Factor r = 1: 
+RMSE = 1.749156312858131
+AR(1) Model: 
+RMSE = 1.7412325638924315
+OLS Regression Including all Variables: 
+RMSE = 3.2748254291345917
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.7469155925788358
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.7570364598544008
+Random Walk Model: 
+RMSE = 1.7768514787297116
+h = 3, J = 493, J_cv = 254
+Dynamic Factor r = 1: 
+RMSE = 2.0188111747097635
+AR(1) Model: 
+RMSE = 2.0243417096357277
+OLS Regression Including all Variables: 
+RMSE = 2.2353504875755146
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 2.0298350602217075
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 2.0421554984932455
+Random Walk Model: 
+RMSE = 2.0759700366132856
+h = 6, J = 301, J_cv = 160
+Dynamic Factor r = 1: 
+RMSE = 1.3882230535117392
+AR(1) Model: 
+RMSE = 1.3868830170679503
+OLS Regression Including all Variables: 
+RMSE = 2.0601237186736356
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.3954099941491198
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.4147392333794553
+Random Walk Model: 
+RMSE = 1.4246536881727354
+h = 6, J = 373, J_cv = 196
+Dynamic Factor r = 1: 
+RMSE = 1.4207888940062345
+AR(1) Model: 
+RMSE = 1.4260732709998054
+OLS Regression Including all Variables: 
+RMSE = 2.0973327126272086
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.4342978895887304
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.4501811054303142
+Random Walk Model: 
+RMSE = 1.4636897132172095
+h = 6, J = 493, J_cv = 256
+Dynamic Factor r = 1: 
+RMSE = 1.612298421258794
+AR(1) Model: 
+RMSE = 1.639560143491096
+OLS Regression Including all Variables: 
+RMSE = 1.9868037069401967
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.6481128432965477
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.6672360725546103
+Random Walk Model: 
+RMSE = 1.7031197293597151
+h = 12, J = 301, J_cv = 163
+Dynamic Factor r = 1: 
+RMSE = 1.1600044237497018
+AR(1) Model: 
+RMSE = 1.1682435218340694
+OLS Regression Including all Variables: 
+RMSE = 1.869248975905591
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.173832739943471
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.2074417254961411
+Random Walk Model: 
+RMSE = 1.1884568783150318
+h = 12, J = 373, J_cv = 199
+Dynamic Factor r = 1: 
+RMSE = 1.180531660653969
+AR(1) Model: 
+RMSE = 1.1914812440145086
+OLS Regression Including all Variables: 
+RMSE = 1.8764013305479197
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.201615394284232
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.227063552325466
+Random Walk Model: 
+RMSE = 1.2088887623590312
+h = 12, J = 493, J_cv = 259
+Dynamic Factor r = 1: 
+RMSE = 1.2641180353859742
+AR(1) Model: 
+RMSE = 1.2979253877096284
+OLS Regression Including all Variables: 
+RMSE = 1.8213399916726913
+Equal Weights Model Averaging with Q = 1: 
+RMSE = 1.3126420047511418
+Equal Weights Model Averaging with interactions, Q = 1: 
+RMSE = 1.3415761273296885
+Random Walk Model: 
+RMSE = 1.3735437907063184

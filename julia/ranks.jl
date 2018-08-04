@@ -4,10 +4,11 @@ Js = [301, 373, 493]
 ensembles = ["BMA", "BMA2", "LAS", "LAS2", "RDG", "RDG2", "RDF", "RDF2", "ARM", "OLS", "MAG", "MAG2", "DFM", "DFM2", "RWM"]
 models = vcat(ensembles, "ESMB")
 RMSEs = zeros(length(models), length(HS), length(Js))
+case = "baseline"
 for (h, H) in enumerate(HS)
     for (j, J) in enumerate(Js)
         println("$h, $J")
-        file_path = "../data/result-forc-indi/level4-h$H-J$J/combined.csv"
+        file_path = "../data/results/$case/level4-h$H-J$J/combined.csv"
         df_in = CSV.read(file_path)
         y = convert(Vector{Float64}, df_in[Symbol("REAL")])
         y_e = zeros(length(y))
@@ -29,6 +30,6 @@ for (h, H) in enumerate(HS)
     df_out[:Models] = models
     for (j, J) in enumerate(Js)
         df_out[Symbol("h$H J$J")] = RMSEs[:, h, j]
-        CSV.write("../data/result-forc-indi/RMSEs_h$H.csv", df_out)
+        CSV.write("../data/results/$case/RMSEs_h$H.csv", df_out)
     end
 end
